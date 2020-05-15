@@ -13,13 +13,21 @@ def scrape():
 
     # NASA Mars News
     url = 'https://mars.nasa.gov/news/?page=0&per_page=40&order=publish_date+desc%2Ccreated_at+desc&search=&category=19%2C165%2C184%2C204&blank_scope=Latest'
-    response = requests.get(url)
+    #response = requests.get(url)
     
-    data = response.text
-    soup = bs(data, 'lxml')
+    browser.visit(url)
+    time.sleep(5)
+    html = browser.html
 
-    news_title = soup.find("div", class_="content_title").find("a").text.strip()
-    news_p = soup.find("div", class_="rollover_description_inner").text.strip()
+    #data = response.text
+    soup = bs(html, 'html.parser')
+
+    result = soup.find('div', class_='list_text')
+    news_title = result.find('div', class_='content_title').text
+    news_p = result.find('div', class_='article_teaser_body').text
+
+    # news_title = soup.find("div", class_="content_title").find("a").text.strip()
+    # news_p = soup.find("div", class_="rollover_description_inner").text.strip()
 
     # JPL Mars Space Images - Featured Image
     url = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
@@ -105,7 +113,7 @@ def scrape():
     browser.quit()
 
     # All Scraped Data
-    mars_scraped_data = {
+    mars_info = {
         "NASA_News_Title": news_title,
         "NASA_News_Paragraph": news_p,
         "JPL_Featured_Image_URL": featured_url_wallpaper_medium,
@@ -114,7 +122,7 @@ def scrape():
         "Mars_Hemispheres": hemisphere_images_urls
     }
 
-    return print(mars_scraped_data)
+    return mars_info
 
 if __name__ == '__main__':
     scrape()
